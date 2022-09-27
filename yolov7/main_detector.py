@@ -39,11 +39,20 @@ class YOLODetector:
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
+        if img.shape[1] != 3:
+            img = img.permute(0, 3, 1, 2) # in case image was [W, H, C], torch expects channel to be index 1
         # Inference
-        pred = self.model(img) # todo: check augment
+        pred = self.model(img)[0] # todo: check augment
         # Apply NMS
         pred = non_max_suppression(pred, self.conf_threshold, self.iou_threshold) # todo: only apply NMS for certain classes
         return pred
 
 if __name__=='__main__':
-    y = YOLOv7()
+    import numpy as np
+    from PIL import Image
+    image_module = YOLODetector()
+    file_name = 'camera_size640_0901_1112_42.jpeg'
+    image = Image.open(file_name)
+    image = np.array(image)
+    pred = image_module.detect(image)
+    print(pred)
