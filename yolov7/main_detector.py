@@ -1,20 +1,11 @@
 import torch
-assert torch.cuda.is_available(), "CUDA not available"
-"""
----YOLO imports---
-Requires:
-1) system $YOLO_PARENT variable with 'yolov7' folder
-2) folder should have the weights "yolov7.pt"
-"""
-#import sys
-#import os
-#sys.path.append(os.path.expandvars('$YOLO_PARENT'))
+assert torch.cuda.is_available(), "CUDA not available - not wise to use YOLO without!"
+
 import yolov7
 from yolov7.models.experimental import attempt_load
 from yolov7.utils.general import check_img_size, non_max_suppression
 from yolov7.utils.torch_utils import select_device, TracedModel
 
-# WEIGHTS = os.path.expandvars('$YOLO_PARENT/yolov7/yolov7.pt')
 WEIGHTS = f'{yolov7.__path__[0]}/yolov7.pt'
 
 class YOLODetector:
