@@ -34,18 +34,19 @@ class YOLODetector:
             self.model(torch.zeros(1, 3, self.img_size, self.img_size).to(self.device).type_as(next(self.model.parameters())))  # run once
 
     def detect(self, image):
-        img = torch.from_numpy(image).to(self.device)
-        img = img.half() if self.half else img.float()  # uint8 to fp16/32
-        img /= 255.0  # 0 - 255 to 0.0 - 1.0
-        if img.ndimension() == 3:
-            img = img.unsqueeze(0)
-        if img.shape[1] != 3:
-            img = img.permute(0, 3, 1, 2) # in case image was [W, H, C], torch expects channel to be index 1
-        # Inference
-        pred = self.model(img)[0] # todo: check augment
-        # Apply NMS
-        pred = non_max_suppression(pred, self.conf_threshold, self.iou_threshold) # todo: only apply NMS for certain classes
-        return pred
+        with torch.no_grad():
+            img = torch.from_numpy(image).to(self.device)
+            img = img.half() if self.half else img.float()  # uint8 to fp16/32
+            img /= 255.0  # 0 - 255 to 0.0 - 1.0
+            if img.ndimension() == 3:
+                img = img.unsqueeze(0)
+            if img.shape[1] != 3:
+                img = img.permute(0, 3, 1, 2) # in case image was [W, H, C], torch expects channel to be index 1
+            # Inference
+            pred = self.model(img)[0] # todo: check augment
+            # Apply NMS
+            pred = non_max_suppression(pred, self.conf_threshold, self.iou_threshold) # todo: only apply NMS for certain classes
+            return pred
 
 if __name__=='__main__':
     import numpy as np
